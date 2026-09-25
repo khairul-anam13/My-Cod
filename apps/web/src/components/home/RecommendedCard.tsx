@@ -14,7 +14,7 @@ export function RecommendedCard({ listing }: { listing: NearbyListing }) {
 
   return (
     <div className="w-40 shrink-0">
-      <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-surface-muted">
+      <div className="relative aspect-square w-full overflow-hidden border-2 border-border bg-surface-muted">
         <Link href={`/listing/${listing.id}`} className="absolute inset-0">
           {photo ? (
             <Image src={photo} alt={listing.title} fill sizes="160px" className="object-cover" />
@@ -28,7 +28,7 @@ export function RecommendedCard({ listing }: { listing: NearbyListing }) {
           type="button"
           onClick={() => setSaved((v) => !v)}
           aria-label={saved ? "Batal simpan" : "Simpan barang"}
-          className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-surface/90 text-foreground shadow"
+          className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center border-2 border-border bg-surface/90 text-foreground"
         >
           <Heart size={14} className={saved ? "fill-primary text-primary" : undefined} />
         </button>
@@ -42,8 +42,8 @@ export function RecommendedCard({ listing }: { listing: NearbyListing }) {
           {formatDistance(listing.distance_m)}
         </div>
         {listing.seller_is_verified && (
-          <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-bold text-primary-soft-foreground">
-            <BadgeCheck size={10} />
+          <span className="mt-1 inline-flex items-center gap-1 border border-accent bg-accent-soft px-2 py-0.5 text-[10px] font-bold text-foreground">
+            <BadgeCheck size={10} className="text-accent" />
             Terpercaya
           </span>
         )}

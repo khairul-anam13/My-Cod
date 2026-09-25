@@ -1,15 +1,15 @@
 "use client";
 
-import { LocateFixed, MapPin, PackageOpen, Search, TriangleAlert } from "lucide-react";
+import { PackageOpen, Search, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CategoryHighlights } from "@/components/home/CategoryHighlights";
 import { HomeSearchBar } from "@/components/home/HomeSearchBar";
+import { LocationSignal } from "@/components/home/LocationSignal";
 import { RecommendedCard } from "@/components/home/RecommendedCard";
 import { ListingCard } from "@/components/ListingCard";
 import { PrimaryHeader } from "@/components/layout/PrimaryHeader";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHydrated } from "@/hooks/useHydrated";
@@ -62,7 +62,11 @@ export default function ExplorePage() {
     <>
       {/* Mobile — native-app-style Beranda main content */}
       <div className="md:hidden">
+        <div className="hazard-edge" />
         <PrimaryHeader title="Jelajah Lokal" />
+        <div className="px-4 pt-3">
+          <LocationSignal location={location} locating={locating} />
+        </div>
         <HomeSearchBar />
         <CategoryHighlights />
 
@@ -110,16 +114,7 @@ export default function ExplorePage() {
             </p>
           </div>
 
-          <Badge className="flex shrink-0 gap-1.5 rounded-none border-2 border-border bg-surface-muted px-3 py-1.5 text-xs font-bold text-foreground">
-            {locating ? (
-              <LocateFixed size={14} className="animate-pulse text-primary" />
-            ) : (
-              <MapPin size={14} className={location.source === "gps" ? "text-accent" : undefined} />
-            )}
-            <span className="uppercase">
-              {locating ? "Mencari…" : location.source === "gps" ? "Lokasi aktif" : "Perkiraan"}
-            </span>
-          </Badge>
+          <LocationSignal location={location} locating={locating} />
         </div>
 
         {error && (

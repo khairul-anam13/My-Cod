@@ -35,9 +35,9 @@ export function CategoryHighlights() {
 
       <Link
         href={`/search?category=${featured.id}`}
-        className="flex items-center gap-3 rounded-2xl border border-border bg-gradient-to-br from-primary-soft to-transparent p-4"
+        className="flex items-center gap-3 border-2 border-border bg-surface p-4 transition-colors hover:border-primary"
       >
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center border-2 border-primary bg-primary text-primary-foreground">
           <FeaturedIcon size={22} />
         </span>
         <div className="min-w-0">
@@ -56,9 +56,9 @@ export function CategoryHighlights() {
               <Link
                 key={c.id}
                 href={`/search?category=${c.id}`}
-                className="flex items-center gap-2.5 rounded-2xl border border-border bg-surface p-3"
+                className="flex items-center gap-2.5 border-2 border-border bg-surface p-3 transition-colors hover:border-primary"
               >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface-muted text-primary">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center border-2 border-border bg-surface-muted text-primary">
                   <Icon size={17} />
                 </span>
                 <span className="truncate text-sm font-semibold text-foreground">{c.name}</span>
