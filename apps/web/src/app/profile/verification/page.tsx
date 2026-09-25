@@ -161,10 +161,10 @@ export default function VerificationPage() {
             <Alert
               className={
                 status.status === "verified"
-                  ? "rounded-xl border-accent/40 bg-accent-soft"
+                  ? "rounded-none border-2 border-accent/40 bg-accent-soft"
                   : status.status === "rejected"
-                    ? "rounded-xl border-danger/40 bg-danger-soft"
-                    : "rounded-xl border-primary/40 bg-primary-soft"
+                    ? "rounded-none border-2 border-danger/40 bg-danger-soft"
+                    : "rounded-none border-2 border-primary/40 bg-primary-soft"
               }
             >
               {status.status === "verified" ? (
@@ -203,9 +203,9 @@ export default function VerificationPage() {
                 placeholder="08123456789"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
-                className="h-11 rounded-xl bg-surface text-base"
+                className="h-11 rounded-none border-2 bg-surface text-base"
               />
-              <Button type="submit" disabled={otpSending} className="h-11 rounded-xl text-sm font-medium">
+              <Button type="submit" disabled={otpSending} variant="brutalist" className="h-11 text-sm">
                 {otpSending && <Loader2 size={16} className="animate-spin" />}
                 {otpSending ? "Mengirim…" : "Kirim Kode OTP"}
               </Button>
@@ -220,9 +220,9 @@ export default function VerificationPage() {
                 placeholder="123456"
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value)}
-                className="h-11 rounded-xl bg-surface text-base tracking-[0.4em]"
+                className="h-11 rounded-none border-2 bg-surface text-base tracking-[0.4em]"
               />
-              <Button type="submit" disabled={otpVerifying} className="h-11 rounded-xl text-sm font-medium">
+              <Button type="submit" disabled={otpVerifying} variant="brutalist" className="h-11 text-sm">
                 {otpVerifying && <Loader2 size={16} className="animate-spin" />}
                 {otpVerifying ? "Memverifikasi…" : "Verifikasi Kode"}
               </Button>
@@ -233,7 +233,7 @@ export default function VerificationPage() {
           )}
 
           {otpError && (
-            <Alert variant="destructive" className="rounded-xl">
+            <Alert variant="destructive" className="rounded-none border-2 border-danger">
               <CircleAlert size={15} />
               <AlertDescription>{otpError}</AlertDescription>
             </Alert>
@@ -278,7 +278,7 @@ export default function VerificationPage() {
             </div>
 
             {submitError && (
-              <Alert variant="destructive" className="rounded-xl">
+              <Alert variant="destructive" className="rounded-none border-2 border-danger">
                 <CircleAlert size={15} />
                 <AlertDescription>{submitError}</AlertDescription>
               </Alert>
@@ -287,7 +287,8 @@ export default function VerificationPage() {
             <Button
               type="submit"
               disabled={submitting || !ktpFile || !selfieFile}
-              className="h-11 rounded-xl text-sm font-medium"
+              variant="brutalist"
+              className="h-11 text-sm"
             >
               {submitting && <Loader2 size={16} className="animate-spin" />}
               <ShieldCheck size={16} />

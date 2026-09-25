@@ -63,7 +63,7 @@ export function AddressFields({
   return (
     <div className="flex flex-col gap-5">
       {lockedNotice && (
-        <Alert className="rounded-xl border-primary/40 bg-primary-soft">
+        <Alert className="rounded-none border-2 border-primary/40 bg-primary-soft">
           <CircleAlert size={15} className="text-primary-soft-foreground" />
           <AlertDescription className="text-primary-soft-foreground">{lockedNotice}</AlertDescription>
         </Alert>
@@ -72,14 +72,14 @@ export function AddressFields({
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="district">Kecamatan</Label>
         {districts === null ? (
-          <Skeleton className="h-11 w-full rounded-xl" />
+          <Skeleton className="h-11 w-full rounded-none" />
         ) : (
           <Select
             value={value.district_id}
             disabled={disabled}
             onValueChange={(districtId) => onChange({ ...value, district_id: districtId, village_id: "" })}
           >
-            <SelectTrigger id="district" className="h-11 w-full rounded-xl bg-surface text-base">
+            <SelectTrigger id="district" className="h-11 w-full rounded-none border-2 bg-surface text-base">
               <SelectValue placeholder="Pilih kecamatan" />
             </SelectTrigger>
             <SelectContent>
@@ -96,14 +96,14 @@ export function AddressFields({
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="village">Kelurahan/Desa</Label>
         {loadingVillages ? (
-          <Skeleton className="h-11 w-full rounded-xl" />
+          <Skeleton className="h-11 w-full rounded-none" />
         ) : (
           <Select
             value={value.village_id}
             disabled={disabled || !value.district_id}
             onValueChange={(villageId) => onChange({ ...value, village_id: villageId })}
           >
-            <SelectTrigger id="village" className="h-11 w-full rounded-xl bg-surface text-base">
+            <SelectTrigger id="village" className="h-11 w-full rounded-none border-2 bg-surface text-base">
               <SelectValue
                 placeholder={value.district_id ? "Pilih kelurahan/desa" : "Pilih kecamatan dulu"}
               />
@@ -129,13 +129,13 @@ export function AddressFields({
           value={value.address_detail}
           onChange={(e) => onChange({ ...value, address_detail: e.target.value })}
           placeholder="Nama jalan, RT/RW, patokan..."
-          className="rounded-xl bg-surface text-base"
+          className="rounded-none border-2 bg-surface text-base"
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
         <Label>Titik Lokasi (Rumah)</Label>
-        <div className="h-64 w-full overflow-hidden rounded-xl border border-border">
+        <div className="h-64 w-full overflow-hidden border-2 border-border">
           <LocationPicker
             value={value.lat !== null && value.lng !== null ? { lat: value.lat, lng: value.lng } : null}
             defaultCenter={DEFAULT_CENTER}

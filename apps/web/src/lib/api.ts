@@ -1,4 +1,11 @@
-import { mockCategories, mockListingDetail, mockNearbyListings } from "@/lib/mockData";
+import {
+  mockCategories,
+  mockListingDetail,
+  mockListingsBySeller,
+  mockNearbyListings,
+  mockProfile,
+  mockReviewsForUser,
+} from "@/lib/mockData";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
@@ -57,12 +64,24 @@ export async function apiFetch<T>(
 
 /** Read-only fixture responses — see src/lib/mockData.ts. `undefined` = not mocked, fall through to the real API. */
 function mockResponseFor(path: string): unknown {
-  const [pathname] = path.split("?");
+  const [pathname, query] = path.split("?");
   if (pathname === "/categories") return mockCategories();
   if (pathname === "/listings/nearby") return mockNearbyListings();
 
-  const detail = pathname.match(/^\/listings\/([^/]+)$/);
-  if (detail) return mockListingDetail(detail[1]);
+  if (pathname === "/listings") {
+    const sellerId = new URLSearchParams(query).get("seller_id");
+    if (sellerId) return mockListingsBySeller(sellerId);
+  }
+
+  const listingDetail = pathname.match(/^\/listings\/([^/]+)$/);
+  if (listingDetail) return mockListingDetail(listingDetail[1]);
+
+  // "/profiles/me/..." needs a real session — never mocked, always falls through.
+  const profile = pathname.match(/^\/profiles\/(?!me\/)([^/]+)$/);
+  if (profile) return mockProfile(profile[1]);
+
+  const reviewsForUser = pathname.match(/^\/reviews\/user\/([^/]+)$/);
+  if (reviewsForUser) return mockReviewsForUser(reviewsForUser[1]);
 
   return undefined;
 }

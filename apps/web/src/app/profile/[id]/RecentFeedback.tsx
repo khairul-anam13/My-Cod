@@ -25,7 +25,7 @@ export function RecentFeedback({ reviews }: { reviews: ReviewWithReviewer[] }) {
         <p className="text-sm text-muted-foreground">Belum ada ulasan.</p>
       ) : (
         <>
-          <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-surface">
+          <div className="divide-y divide-border border-2 border-border bg-surface">
             {visible.map((review) => (
               <div key={review.id} className="flex flex-col gap-1.5 p-3.5">
                 {review.comment && <p className="text-sm text-foreground">&ldquo;{review.comment}&rdquo;</p>}

@@ -81,7 +81,7 @@ export function ProfileView({
               ) : (
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                   {listings.map((listing) => (
-                    <div key={listing.id} className="flex flex-col overflow-hidden rounded-2xl border border-border">
+                    <div key={listing.id} className="flex flex-col overflow-hidden border-2 border-border">
                       <Link href={`/listing/${listing.id}`} className="flex flex-col">
                         <div className="relative aspect-square w-full flex items-center justify-center bg-surface-muted text-muted-foreground">
                           {listing.photos[0] ? (

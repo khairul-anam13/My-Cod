@@ -45,7 +45,7 @@ export function ChatFollowBar({ firstListingId }: { firstListingId: string | nul
   return (
     <>
       <div className="md:hidden fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] z-40 px-4">
-        <div className="mx-auto flex max-w-md gap-3 rounded-2xl border-2 border-border bg-surface/95 p-3 shadow-2xl backdrop-blur-md">
+        <div className="mx-auto flex max-w-md gap-3 border-2 border-border bg-surface/95 p-3 backdrop-blur-md">
           {buttons}
         </div>
       </div>

@@ -228,7 +228,7 @@ function EditProfileForm() {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="h-11 rounded-xl bg-surface pl-10 text-base"
+              className="h-11 rounded-none border-2 bg-surface pl-10 text-base"
             />
           </div>
         </div>
@@ -245,7 +245,7 @@ function EditProfileForm() {
               placeholder="08123456789"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              className="h-11 rounded-xl bg-surface pl-10 text-base"
+              className="h-11 rounded-none border-2 bg-surface pl-10 text-base"
             />
           </div>
           <p className="text-xs text-muted-foreground">
@@ -255,13 +255,13 @@ function EditProfileForm() {
         </div>
 
         {profileError && (
-          <Alert variant="destructive" className="rounded-xl">
+          <Alert variant="destructive" className="rounded-none border-2 border-danger">
             <CircleAlert size={15} />
             <AlertDescription>{profileError}</AlertDescription>
           </Alert>
         )}
 
-        <Button type="submit" disabled={profileLoading} className="h-11 rounded-xl text-base font-medium">
+        <Button type="submit" disabled={profileLoading} variant="brutalist" className="h-11 text-sm">
           {profileLoading && <Loader2 size={17} className="animate-spin" />}
           {profileLoading ? "Menyimpan…" : "Simpan Profil"}
         </Button>
@@ -288,7 +288,7 @@ function EditProfileForm() {
             />
 
             {addressError && (
-              <Alert variant="destructive" className="rounded-xl">
+              <Alert variant="destructive" className="rounded-none border-2 border-danger">
                 <CircleAlert size={15} />
                 <AlertDescription>{addressError}</AlertDescription>
               </Alert>
@@ -297,7 +297,8 @@ function EditProfileForm() {
             <Button
               type="submit"
               disabled={addressLoading || !canUpdateNow}
-              className="h-11 rounded-xl text-base font-medium"
+              variant="brutalist"
+              className="h-11 text-sm"
             >
               {addressLoading && <Loader2 size={17} className="animate-spin" />}
               {addressLoading ? "Menyimpan…" : "Simpan Alamat"}

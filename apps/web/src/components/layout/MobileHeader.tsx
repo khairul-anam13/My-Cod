@@ -31,7 +31,7 @@ export function MobileHeader() {
 
   return (
     <header className="md:hidden sticky top-0 z-40 border-b-2 border-border bg-surface/95 backdrop-blur-md">
-      <div className="flex items-center gap-2.5 px-4 py-2.5">
+      <div className="flex items-center gap-3 px-4 py-2.5">
         <Link href="/" className="flex shrink-0 items-center gap-2">
           <div className="relative h-9 w-9 overflow-hidden rounded-xl border-2 border-border bg-white">
             <Image src="/logo-cod.png" alt="" fill sizes="36px" className="object-contain p-1" />

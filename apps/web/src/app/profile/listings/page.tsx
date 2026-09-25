@@ -106,23 +106,23 @@ export default function MyListingsPage() {
 
       <div className="flex flex-col gap-3 px-4 pb-6">
         {listings === null &&
-          Array.from({ length: 3 }, (_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
+          Array.from({ length: 3 }, (_, i) => <Skeleton key={i} className="h-24 rounded-none" />)}
 
         {listings?.length === 0 && (
           <div className="flex flex-col items-center gap-2 py-16 text-center">
             <Package size={28} className="text-muted-foreground" strokeWidth={1.5} />
             <p className="text-sm text-muted-foreground">Belum ada barang yang kamu jual.</p>
-            <Button asChild size="sm" className="mt-2">
+            <Button asChild variant="brutalist" size="sm" className="mt-2">
               <Link href="/post">Jual Barang</Link>
             </Button>
           </div>
         )}
 
         {listings?.map((listing) => (
-          <div key={listing.id} className="flex items-center gap-3 rounded-xl border border-border p-3">
+          <div key={listing.id} className="flex items-center gap-3 border-2 border-border p-3">
             <Link
               href={`/listing/${listing.id}`}
-              className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-surface-muted"
+              className="relative h-16 w-16 shrink-0 overflow-hidden border-2 border-border bg-surface-muted"
             >
               {listing.photos[0] ? (
                 <Image src={listing.photos[0]} alt={listing.title} fill className="object-cover" />

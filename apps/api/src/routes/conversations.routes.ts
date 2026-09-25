@@ -10,7 +10,7 @@ conversationsRouter.get("/", async (req, res) => {
   const { data, error } = await req.supabase
     .from("conversations")
     .select(
-      "*, listing:listings(id, title, price, photos, status), buyer:profiles!conversations_buyer_id_fkey(id, name, profile_photo_url, is_verified), seller:profiles!conversations_seller_id_fkey(id, name, profile_photo_url, is_verified), messages(content, sent_at)",
+      "*, listing:listings(id, title, price, photos, status), buyer:profiles!conversations_buyer_id_fkey(id, name, profile_photo_url, identity_verified), seller:profiles!conversations_seller_id_fkey(id, name, profile_photo_url, identity_verified), messages(content, sent_at)",
     )
     .or(`buyer_id.eq.${req.userId},seller_id.eq.${req.userId}`)
     .order("created_at", { ascending: false });

@@ -40,7 +40,7 @@ export function DesktopHeader() {
           <HeaderSearchBox />
         </Suspense>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-3">
           <Button asChild variant="brutalist" size="lg" className="h-11 px-5 text-sm">
             <Link href="/post">
               <Plus size={18} strokeWidth={4} />

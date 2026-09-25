@@ -80,7 +80,7 @@ export default function ExplorePage() {
         {error && (
           <Alert
             variant="destructive"
-            className="mx-4 mt-3 flex flex-col items-center gap-2 rounded-2xl border border-danger bg-danger-soft p-4 text-center"
+            className="mx-4 mt-3 flex flex-col items-center gap-2 rounded-none border-2 border-danger bg-danger-soft p-4 text-center"
           >
             <TriangleAlert size={22} />
             <AlertDescription className="text-xs font-semibold text-danger">{error}</AlertDescription>
@@ -90,7 +90,7 @@ export default function ExplorePage() {
         <div className="mt-3 flex gap-3 overflow-x-auto px-4 pb-6">
           {listings === null || locating ? (
             Array.from({ length: 4 }, (_, i) => (
-              <Skeleton key={i} className="aspect-4/5 w-40 shrink-0 rounded-2xl" />
+              <Skeleton key={i} className="aspect-4/5 w-40 shrink-0 rounded-none" />
             ))
           ) : listings.length === 0 && !error ? (
             <div className="w-full">

@@ -15,7 +15,7 @@ import { ListingActions } from "./ListingActions";
 import { ListingGallery } from "./ListingGallery";
 
 type ListingDetail = Listing & {
-  seller: Pick<Profile, "id" | "name" | "profile_photo_url" | "city" | "is_verified" | "rating_avg">;
+  seller: Pick<Profile, "id" | "name" | "profile_photo_url" | "city" | "identity_verified" | "rating_avg">;
   category: Category;
 };
 
@@ -99,7 +99,7 @@ export default async function ListingDetailPage({
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1">
                   <p className="truncate text-sm font-bold text-foreground">{listing.seller.name}</p>
-                  {listing.seller.is_verified && (
+                  {listing.seller.identity_verified && (
                     <BadgeCheck size={15} className="shrink-0 fill-accent text-surface" />
                   )}
                 </div>

@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { LocationState } from "@/hooks/useLocation";
@@ -116,12 +117,7 @@ export function NewListingForm({
           <X size={20} />
         </Button>
         <h1 className="text-base font-black text-foreground">Listing Baru</h1>
-        <Button
-          type="submit"
-          disabled={submitting}
-          variant="ghost"
-          className="px-2 text-sm font-black text-primary hover:bg-transparent hover:text-primary-hover"
-        >
+        <Button type="submit" disabled={submitting} variant="brutalist" className="h-9 px-4 text-xs">
           {submitting && <Loader2 size={15} className="animate-spin" />}
           {submitting ? "Mengirim…" : "Posting"}
         </Button>
@@ -129,6 +125,7 @@ export function NewListingForm({
 
       <div className="flex flex-col gap-5 px-4 py-4">
         <div>
+          <Label className="mb-2 block">Foto barang</Label>
           <input
             ref={fileInputRef}
             type="file"
@@ -142,7 +139,7 @@ export function NewListingForm({
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex aspect-square flex-col items-center justify-center gap-1 rounded-2xl border-2 border-dashed border-border text-muted-foreground"
+                className="flex aspect-square flex-col items-center justify-center gap-1 border-2 border-dashed border-border text-muted-foreground"
               >
                 <ImagePlus size={22} strokeWidth={1.75} />
                 <span className="text-[11px] font-medium">Tambah Foto</span>
@@ -155,7 +152,7 @@ export function NewListingForm({
                   alt=""
                   fill
                   unoptimized
-                  className="rounded-2xl object-cover"
+                  className="border-2 border-border object-cover"
                 />
                 <button
                   type="button"
@@ -173,32 +170,43 @@ export function NewListingForm({
           </p>
         </div>
 
-        <div className="flex flex-col divide-y divide-border rounded-2xl border border-border bg-surface">
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="title">Judul</Label>
           <Input
+            id="title"
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Judul barang"
-            className="h-auto rounded-none border-0 bg-transparent px-4 py-3.5 text-base shadow-none focus-visible:ring-0"
+            placeholder="Contoh: Sepeda lipat masih bagus"
+            className="h-11 rounded-none border-2 bg-surface text-base"
           />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="price">Harga</Label>
           <div className="relative">
-            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
               Rp
             </span>
             <Input
+              id="price"
               required
               type="number"
               min={0}
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="0"
-              className="h-auto rounded-none border-0 bg-transparent py-3.5 pr-4 pl-9 text-base shadow-none focus-visible:ring-0"
+              className="h-11 rounded-none border-2 bg-surface pl-9 text-base"
             />
           </div>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="category">Kategori</Label>
           <Select required value={categoryId} onValueChange={setCategoryId}>
-            <SelectTrigger className="h-auto w-full justify-between rounded-none border-0 bg-transparent px-4 py-3.5 text-base shadow-none focus-visible:ring-0">
+            <SelectTrigger id="category" className="h-11 w-full rounded-none border-2 bg-surface text-base">
               <CategoryLeadingIcon categoryId={categoryId} categories={categories} />
-              <SelectValue placeholder="Kategori" />
+              <SelectValue placeholder="Pilih kategori" />
             </SelectTrigger>
             <SelectContent>
               {categories.map((c) => (
@@ -210,16 +218,20 @@ export function NewListingForm({
           </Select>
         </div>
 
-        <Textarea
-          required
-          rows={4}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Deskripsikan barangmu... (merek, kondisi, alasan jual)"
-          className="rounded-2xl bg-surface text-base"
-        />
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="description">Deskripsi</Label>
+          <Textarea
+            id="description"
+            required
+            rows={4}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Deskripsikan barangmu... (merek, kondisi, alasan jual)"
+            className="rounded-none border-2 bg-surface text-base"
+          />
+        </div>
 
-        <div className="flex items-center gap-2.5 rounded-2xl border border-border bg-surface-muted p-3.5">
+        <div className="flex items-center gap-2.5 border-2 border-border bg-surface-muted p-3.5">
           <MapPin size={18} className="shrink-0 text-primary" />
           <p className="text-xs text-muted-foreground">
             <span className="font-bold text-foreground">COD saja.</span> My COD cuma untuk transaksi ketemu
@@ -228,7 +240,7 @@ export function NewListingForm({
           </p>
         </div>
 
-        <div className="flex gap-2.5 rounded-2xl border border-border bg-surface p-3.5">
+        <div className="flex gap-2.5 border-2 border-border bg-surface p-3.5">
           <ShieldCheck size={18} className="mt-0.5 shrink-0 text-primary" />
           <div>
             <p className="text-xs font-bold text-foreground">Rekomendasi Lokasi Aman</p>
@@ -240,7 +252,7 @@ export function NewListingForm({
         </div>
 
         {error && (
-          <Alert variant="destructive" className="rounded-xl">
+          <Alert variant="destructive" className="rounded-none border-2 border-danger">
             <CircleAlert size={15} />
             <AlertDescription>{error}</AlertDescription>
           </Alert>

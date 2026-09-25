@@ -15,8 +15,8 @@ import type { Conversation, Listing, Message, Profile } from "@my-cod/shared-typ
 
 type ConversationWithRelations = Conversation & {
   listing: Pick<Listing, "id" | "title" | "price" | "photos" | "status">;
-  buyer: Pick<Profile, "id" | "name" | "profile_photo_url" | "is_verified">;
-  seller: Pick<Profile, "id" | "name" | "profile_photo_url" | "is_verified">;
+  buyer: Pick<Profile, "id" | "name" | "profile_photo_url" | "identity_verified">;
+  seller: Pick<Profile, "id" | "name" | "profile_photo_url" | "identity_verified">;
   last_message: Pick<Message, "content" | "sent_at"> | null;
 };
 
@@ -108,8 +108,8 @@ export default function ChatListPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
                     <p className="truncate text-sm font-bold text-foreground">{other.name}</p>
-                    {other.is_verified && (
-                      <span className="flex shrink-0 items-center gap-0.5 rounded-full bg-primary-soft px-1.5 py-0.5 text-[9px] font-bold uppercase text-primary-soft-foreground">
+                    {other.identity_verified && (
+                      <span className="flex shrink-0 items-center gap-0.5 rounded-full bg-accent-soft px-1.5 py-0.5 text-[9px] font-bold uppercase text-accent">
                         <BadgeCheck size={9} />
                         Verified
                       </span>

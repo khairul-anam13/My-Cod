@@ -74,14 +74,14 @@ export default function AdminVerificationPage() {
 
       <div className="flex flex-col gap-4 px-6">
         {forbidden && (
-          <Alert variant="destructive" className="rounded-xl">
+          <Alert variant="destructive" className="rounded-none border-2 border-danger">
             <ShieldAlert size={15} />
             <AlertDescription>Halaman ini khusus admin.</AlertDescription>
           </Alert>
         )}
 
         {error && (
-          <Alert variant="destructive" className="rounded-xl">
+          <Alert variant="destructive" className="rounded-none border-2 border-danger">
             <CircleAlert size={15} />
             <AlertDescription>{error}</AlertDescription>
           </Alert>
@@ -150,7 +150,7 @@ function QueueCard({
       </div>
 
       {!rejecting ? (
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <Button onClick={approve} disabled={busy} size="sm" className="h-9 flex-1 gap-1.5 text-xs">
             <ShieldCheck size={14} />
             Setujui
@@ -173,9 +173,9 @@ function QueueCard({
             onChange={(e) => setReason(e.target.value)}
             placeholder="Alasan penolakan…"
             rows={2}
-            className="rounded-lg bg-surface-muted text-xs"
+            className="rounded-none border-2 bg-surface-muted text-xs"
           />
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <Button
               onClick={reject}
               disabled={busy || !reason.trim()}
@@ -200,9 +200,9 @@ function PhotoTile({ label, url }: { label: string; url: string | null }) {
       <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">{label}</span>
       {url ? (
         // eslint-disable-next-line @next/next/no-img-element -- private signed URL, not worth a next/image remote-pattern for an admin-only page
-        <img src={url} alt={label} className="aspect-[4/3] w-full border border-border object-cover" />
+        <img src={url} alt={label} className="aspect-[4/3] w-full border-2 border-border object-cover" />
       ) : (
-        <div className="flex aspect-[4/3] w-full items-center justify-center border border-border bg-surface-muted text-[10px] text-muted-foreground">
+        <div className="flex aspect-[4/3] w-full items-center justify-center border-2 border-border bg-surface-muted text-[10px] text-muted-foreground">
           Tidak ada foto
         </div>
       )}

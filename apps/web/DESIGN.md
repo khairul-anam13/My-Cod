@@ -66,6 +66,47 @@ A secondary, much quieter motif — a 4px diagonal hazard-stripe bar
 namesake) — marks exactly one structural seam (top of the mobile header)
 instead of being sprinkled as decoration.
 
+## v3 — Site-wide spacing & layout system
+
+v2 redesigned the shell + Explore. This pass extends the same rules to every
+remaining page — the point is one consistent system, not per-page taste.
+
+**Gap scale, by relationship (not vibes):**
+
+| Relationship | Gap | Example |
+|---|---|---|
+| Icon + label inside one control | `gap-1.5`–`gap-2` | badge, nav item |
+| Distinct controls of different weight, same cluster | `gap-3` (never `gap-2`) | primary CTA next to a ghost icon button |
+| Form field → its input | `gap-1.5` | `<Label>` to `<Input>` |
+| Field stack → next field stack | `gap-5` | two `<Label>+<Input>` pairs |
+| Major sections on a page | `gap-6`–`gap-8` | hero → content → footer actions |
+
+A cluster of unrelated interactive controls at `gap-2` was the concrete bug
+that started this pass (`DesktopHeader`'s Jual/chat/account group) — same
+gap as an icon hugging its own label, so a filled CTA read as glued to the
+ghost button next to it. Fixed there; audited for the same mistake
+everywhere else a `flex` groups multiple controls.
+
+**Hard edges everywhere, still.** v2 called this out for cards but a few
+pages (profile edit, forms) had already shipped with `rounded-xl`/`rounded-2xl`
+soft panels before the brutalist language was established — this pass
+converts those to `border-2 border-border` + `rounded-none`, matching
+`ListingCard`. Chat bubbles are the one deliberate exception (rounded is the
+correct, legible convention for a message bubble; brutalist-everything would
+just be dogma over usability there).
+
+**Buttons.** `variant="brutalist"` for the one primary action per screen
+(hard shadow, filled orange) — several forms had fallen back to the
+unstyled `default` button variant pre-redesign; unified to `brutalist` for
+primary submits, `outline` for secondary, `ghost` for tertiary/dismiss,
+matching what `ListingForm`/`BottomNav` already did correctly.
+
+**Section rhythm over margin soup.** Prefer a parent `flex flex-col gap-N`
+over sibling `mt-3`/`mt-4`/`mt-5` sprinkled ad hoc — one declared gap reads
+as "this is one rhythm," scattered margins read as accumulated patches
+(which several pages literally were, from iterative feature additions this
+project went through).
+
 ## Self-critique
 
 - The uppercase-tracking-wide labels throughout could read as the generic

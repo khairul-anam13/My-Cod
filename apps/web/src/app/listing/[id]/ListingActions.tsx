@@ -61,7 +61,7 @@ export function ListingActions({
   }
 
   const actions = isOwner ? (
-    <div className="flex gap-2">
+    <div className="flex gap-3">
       <Button asChild variant="brutalist" className="h-12 flex-1 text-sm">
         <Link href={`/listing/${listingId}/edit`}>
           <Pencil size={16} strokeWidth={3} />

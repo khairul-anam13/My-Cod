@@ -85,7 +85,7 @@ listingsRouter.get("/:id", async (req, res) => {
   const { data, error } = await req.supabase
     .from("listings")
     .select(
-      `${LISTING_COLUMNS}, seller:profiles!listings_seller_id_fkey(id, name, profile_photo_url, city, is_verified, rating_avg), category:categories(id, name, icon)`,
+      `${LISTING_COLUMNS}, seller:profiles!listings_seller_id_fkey(id, name, profile_photo_url, city, identity_verified, rating_avg), category:categories(id, name, icon)`,
     )
     .eq("id", req.params.id)
     .maybeSingle();

@@ -1,11 +1,13 @@
-import type { Category, NearbyListing } from "@my-cod/shared-types";
+import type { Category, Listing, NearbyListing, Profile, Review } from "@my-cod/shared-types";
 
 /**
  * Fixture data for visual checking while no Supabase Cloud project is wired
- * up (see .env.local — NEXT_PUBLIC_USE_MOCK_DATA). Covers only the
- * read-only browse endpoints (categories, nearby listings, listing detail);
- * anything requiring auth still needs a real backend. Shapes mirror
- * supabase/seed.sql so this stays consistent with real data once connected.
+ * up (see .env.local — NEXT_PUBLIC_USE_MOCK_DATA). Covers only *public,
+ * unauthenticated* read endpoints (categories, listings, public profiles,
+ * reviews) — anything behind login (chat, own profile, posting, admin,
+ * verification) needs a real Supabase Auth session to mean anything, mock
+ * data can't substitute for that. Shapes mirror supabase/seed.sql so this
+ * stays consistent with real data once connected.
  */
 
 const CATEGORIES: Category[] = [
@@ -157,6 +159,101 @@ const LISTINGS: NearbyListing[] = [
   },
 ];
 
+type PublicProfile = Pick<
+  Profile,
+  "id" | "name" | "profile_photo_url" | "city" | "is_verified" | "identity_verified" | "rating_avg" | "created_at"
+>;
+
+const PROFILES: Record<string, PublicProfile> = {
+  "a0000000-0000-4000-8000-000000000001": {
+    id: "a0000000-0000-4000-8000-000000000001",
+    name: "Budi Santoso",
+    profile_photo_url: null,
+    city: "Kabupaten Karanganyar",
+    is_verified: true,
+    identity_verified: true,
+    rating_avg: 4.8,
+    created_at: "2025-01-10T00:00:00.000Z",
+  },
+  "a0000000-0000-4000-8000-000000000002": {
+    id: "a0000000-0000-4000-8000-000000000002",
+    name: "Siti Rahma",
+    profile_photo_url: null,
+    city: "Kabupaten Karanganyar",
+    is_verified: true,
+    identity_verified: true,
+    rating_avg: 4.9,
+    created_at: "2024-11-02T00:00:00.000Z",
+  },
+  "a0000000-0000-4000-8000-000000000003": {
+    id: "a0000000-0000-4000-8000-000000000003",
+    name: "Andi Pratama",
+    profile_photo_url: null,
+    city: "Kabupaten Karanganyar",
+    is_verified: true,
+    identity_verified: false,
+    rating_avg: 4.6,
+    created_at: "2025-03-20T00:00:00.000Z",
+  },
+  "a0000000-0000-4000-8000-000000000004": {
+    id: "a0000000-0000-4000-8000-000000000004",
+    name: "Joko Susilo",
+    profile_photo_url: null,
+    city: "Kabupaten Karanganyar",
+    is_verified: false,
+    identity_verified: false,
+    rating_avg: 4.5,
+    created_at: "2025-06-05T00:00:00.000Z",
+  },
+};
+
+interface MockReview extends Review {
+  reviewer: { id: string; name: string; profile_photo_url: string | null };
+}
+
+const REVIEWS: MockReview[] = [
+  {
+    id: "e0000000-0000-4000-8000-000000000001",
+    listing_id: "d0000000-0000-4000-8000-000000000001",
+    reviewer_id: "a0000000-0000-4000-8000-000000000002",
+    reviewed_user_id: "a0000000-0000-4000-8000-000000000001",
+    rating: 5,
+    comment: "COD lancar, barang sesuai foto. Budi ramah dan tepat waktu.",
+    created_at: "2025-08-01T10:00:00.000Z",
+    reviewer: { id: "a0000000-0000-4000-8000-000000000002", name: "Siti Rahma", profile_photo_url: null },
+  },
+  {
+    id: "e0000000-0000-4000-8000-000000000002",
+    listing_id: "d0000000-0000-4000-8000-000000000003",
+    reviewer_id: "a0000000-0000-4000-8000-000000000004",
+    reviewed_user_id: "a0000000-0000-4000-8000-000000000001",
+    rating: 5,
+    comment: "Helm masih mulus, sesuai deskripsi. Recommended seller.",
+    created_at: "2025-08-15T14:30:00.000Z",
+    reviewer: { id: "a0000000-0000-4000-8000-000000000004", name: "Joko Susilo", profile_photo_url: null },
+  },
+  {
+    id: "e0000000-0000-4000-8000-000000000003",
+    listing_id: "d0000000-0000-4000-8000-000000000002",
+    reviewer_id: "a0000000-0000-4000-8000-000000000001",
+    reviewed_user_id: "a0000000-0000-4000-8000-000000000002",
+    rating: 5,
+    comment: "Nasi liwetnya enak banget, anter cepet.",
+    created_at: "2025-09-01T18:00:00.000Z",
+    reviewer: { id: "a0000000-0000-4000-8000-000000000001", name: "Budi Santoso", profile_photo_url: null },
+  },
+  {
+    id: "e0000000-0000-4000-8000-000000000004",
+    listing_id: "d0000000-0000-4000-8000-000000000004",
+    reviewer_id: "a0000000-0000-4000-8000-000000000002",
+    reviewed_user_id: "a0000000-0000-4000-8000-000000000003",
+    rating: 4,
+    comment: "Jaketnya oke, agak lama balas chat tapi barangnya sesuai.",
+    created_at: "2025-07-20T09:00:00.000Z",
+    reviewer: { id: "a0000000-0000-4000-8000-000000000002", name: "Siti Rahma", profile_photo_url: null },
+  },
+];
+
 export function mockCategories(): Category[] {
   return CATEGORIES;
 }
@@ -187,8 +284,32 @@ export function mockListingDetail(id: string) {
       name: listing.seller_name,
       profile_photo_url: null,
       city: "Kabupaten Karanganyar",
-      is_verified: listing.seller_is_verified,
+      identity_verified: listing.seller_is_verified,
       rating_avg: listing.seller_rating_avg,
     },
   };
+}
+
+export function mockProfile(id: string): PublicProfile | null {
+  return PROFILES[id] ?? null;
+}
+
+export function mockListingsBySeller(sellerId: string): Listing[] {
+  return LISTINGS.filter((l) => l.seller_id === sellerId).map((l) => ({
+    id: l.id,
+    seller_id: l.seller_id,
+    title: l.title,
+    description: l.description,
+    price: l.price,
+    category_id: l.category_id,
+    photos: l.photos,
+    lat: l.lat,
+    lng: l.lng,
+    status: l.status,
+    created_at: l.created_at,
+  }));
+}
+
+export function mockReviewsForUser(userId: string): MockReview[] {
+  return REVIEWS.filter((r) => r.reviewed_user_id === userId);
 }

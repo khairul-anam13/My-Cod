@@ -74,7 +74,7 @@ export function MeetupPanel({
   }
 
   return (
-    <div className="flex flex-col gap-3 border-b border-border bg-primary-soft/40 p-3">
+    <div className="flex flex-col gap-3 border-b-2 border-border bg-surface-muted p-3">
       <div className="flex items-center justify-between">
         <p className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
           <CalendarClock size={14} />
@@ -89,7 +89,7 @@ export function MeetupPanel({
 
       <ul className="flex flex-col gap-2">
         {meetups.map((m) => (
-          <li key={m.id} className="rounded-xl bg-surface p-2.5 text-sm shadow-sm">
+          <li key={m.id} className="border-2 border-border bg-surface p-2.5 text-sm">
             <div className="flex items-start justify-between gap-2">
               <span className="flex items-center gap-1.5 font-medium text-foreground">
                 <MapPin size={13} className="shrink-0 text-muted-foreground" />
@@ -104,7 +104,7 @@ export function MeetupPanel({
             </p>
 
             {m.status === "scheduled" && (
-              <div className="mt-2 flex gap-2">
+              <div className="mt-2 flex gap-3">
                 <Button
                   onClick={() => updateStatus(m.id, "completed")}
                   size="sm"
@@ -142,13 +142,13 @@ export function MeetupPanel({
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           placeholder="Titik ketemu (mis. minimarket X)"
-          className="h-auto rounded-lg bg-surface px-3 py-2 text-sm"
+          className="h-auto rounded-none border-2 bg-surface px-3 py-2 text-sm"
         />
         <Input
           type="datetime-local"
           value={time}
           onChange={(e) => setTime(e.target.value)}
-          className="h-auto rounded-lg bg-surface px-3 py-2 text-sm"
+          className="h-auto rounded-none border-2 bg-surface px-3 py-2 text-sm"
         />
         <Button type="submit" disabled={submitting} size="sm" className="h-auto rounded-lg py-2 text-sm font-medium">
           {submitting && <Loader2 size={14} className="animate-spin" />}

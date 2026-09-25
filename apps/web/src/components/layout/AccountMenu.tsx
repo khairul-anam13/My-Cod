@@ -1,6 +1,6 @@
 "use client";
 
-import { LogIn, LogOut, MessageCircle, Package, UserRound } from "lucide-react";
+import { BadgeCheck, LogIn, LogOut, MessageCircle, Package, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -76,6 +76,12 @@ export function AccountMenu() {
           <Link href="/chat">
             <MessageCircle size={14} />
             Chat
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/profile/verification">
+            <BadgeCheck size={14} />
+            Verifikasi Identitas
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />

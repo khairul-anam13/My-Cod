@@ -73,7 +73,7 @@ export function MobileFilterFab({
           <FilterControls value={draft} onChange={setDraft} categories={categories} />
         </div>
 
-        <SheetFooter className="flex-row gap-2 border-t-2 border-border px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <SheetFooter className="flex-row gap-3 border-t-2 border-border px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           <Button
             type="button"
             variant="outline"

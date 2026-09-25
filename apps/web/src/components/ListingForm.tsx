@@ -113,7 +113,7 @@ export function ListingForm(props: ListingFormProps) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5 px-4 pb-6">
       <div>
-        <p className="mb-2 text-sm font-medium text-foreground">Foto barang</p>
+        <Label className="mb-2 block">Foto barang</Label>
         <input
           ref={fileInputRef}
           type="file"
@@ -125,7 +125,7 @@ export function ListingForm(props: ListingFormProps) {
         <div className="flex flex-wrap gap-2">
           {existingPhotos.map((url, i) => (
             <div key={url} className="relative h-20 w-20 shrink-0">
-              <Image src={url} alt="" width={80} height={80} className="h-20 w-20 rounded-xl object-cover" />
+              <Image src={url} alt="" width={80} height={80} className="h-20 w-20 border-2 border-border object-cover" />
               <Button
                 type="button"
                 onClick={() => removeExistingPhoto(i)}
@@ -145,7 +145,7 @@ export function ListingForm(props: ListingFormProps) {
                 width={80}
                 height={80}
                 unoptimized
-                className="h-20 w-20 rounded-xl object-cover"
+                className="h-20 w-20 border-2 border-border object-cover"
               />
               <Button
                 type="button"
@@ -162,7 +162,7 @@ export function ListingForm(props: ListingFormProps) {
             type="button"
             variant="outline"
             onClick={() => fileInputRef.current?.click()}
-            className="h-20 w-20 shrink-0 flex-col gap-1 rounded-xl border-2 border-dashed text-muted-foreground"
+            className="h-20 w-20 shrink-0 flex-col gap-1 rounded-none border-2 border-dashed text-muted-foreground"
           >
             <ImagePlus size={20} strokeWidth={1.75} />
             <span className="text-[11px]">Tambah</span>
@@ -178,7 +178,7 @@ export function ListingForm(props: ListingFormProps) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Contoh: Sepeda lipat masih bagus"
-          className="h-11 rounded-xl bg-surface text-base"
+          className="h-11 rounded-none border-2 bg-surface text-base"
         />
       </div>
 
@@ -193,7 +193,7 @@ export function ListingForm(props: ListingFormProps) {
             min={0}
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            className="h-11 rounded-xl bg-surface pl-9 text-base"
+            className="h-11 rounded-none border-2 bg-surface pl-9 text-base"
           />
         </div>
       </div>
@@ -201,7 +201,7 @@ export function ListingForm(props: ListingFormProps) {
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="category">Kategori</Label>
         <Select required value={categoryId} onValueChange={setCategoryId}>
-          <SelectTrigger id="category" className="h-11 w-full rounded-xl bg-surface text-base">
+          <SelectTrigger id="category" className="h-11 w-full rounded-none border-2 bg-surface text-base">
             <CategoryLeadingIcon categoryId={categoryId} categories={categories} />
             <SelectValue placeholder="Pilih kategori" />
           </SelectTrigger>
@@ -224,7 +224,7 @@ export function ListingForm(props: ListingFormProps) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Kondisi barang, alasan jual, dll."
-          className="rounded-xl bg-surface text-base"
+          className="rounded-none border-2 bg-surface text-base"
         />
       </div>
 
@@ -237,13 +237,13 @@ export function ListingForm(props: ListingFormProps) {
       )}
 
       {error && (
-        <Alert variant="destructive" className="rounded-xl">
+        <Alert variant="destructive" className="rounded-none border-2 border-danger">
           <CircleAlert size={15} />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      <Button type="submit" disabled={submitting} className="h-12 rounded-xl text-base font-medium">
+      <Button type="submit" disabled={submitting} variant="brutalist" className="h-12 text-sm">
         {submitting && <Loader2 size={18} className="animate-spin" />}
         {submitting ? "Menyimpan…" : props.mode === "create" ? "Publikasikan" : "Simpan Perubahan"}
       </Button>

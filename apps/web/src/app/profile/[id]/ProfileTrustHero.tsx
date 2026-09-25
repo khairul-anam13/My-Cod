@@ -40,7 +40,7 @@ export function ProfileTrustHero({
   const dashOffset = RING_CIRCUMFERENCE * (1 - score / 100);
 
   return (
-    <div className="relative mt-10 flex flex-col items-center rounded-2xl border border-border bg-surface px-4 pt-12 pb-6">
+    <div className="relative mt-10 flex flex-col items-center border-2 border-border bg-surface px-4 pt-12 pb-6">
       <div className="absolute -top-10 left-1/2 -translate-x-1/2">
         <Avatar className="h-20 w-20 border-4 border-background">
           <AvatarImage src={photoUrl ?? undefined} alt={name} />
