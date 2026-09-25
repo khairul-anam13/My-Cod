@@ -13,10 +13,7 @@
     "dev:api": "pnpm --filter api dev",
     "build": "pnpm -r --if-present build",
     "lint": "pnpm -r --if-present lint",
-    "typecheck": "pnpm -r --if-present typecheck",
-    "supabase:start": "supabase start",
-    "supabase:stop": "supabase stop",
-    "supabase:reset": "supabase db reset"
+    "typecheck": "pnpm -r --if-present typecheck"
   },
   "pnpm": {
     "onlyBuiltDependencies": ["esbuild"]

@@ -50,7 +50,7 @@ export function ProfileView({
             <ProfileTrustHero
               name={profile.name}
               photoUrl={profile.profile_photo_url}
-              isVerified={profile.is_verified}
+              isVerified={profile.identity_verified}
               memberSinceYear={new Date(profile.created_at).getFullYear()}
               soldCount={soldCount}
               reviewCount={reviews.length}
@@ -58,7 +58,7 @@ export function ProfileView({
             />
 
             <TrustBadges
-              isVerified={profile.is_verified}
+              isVerified={profile.identity_verified}
               ratingAvg={profile.rating_avg}
               reviewCount={reviews.length}
               listingCount={listings.length}

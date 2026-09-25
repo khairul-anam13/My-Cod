@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { requireAuth, requireVerified } from "../middleware/auth.js";
 import { sendDbError } from "../lib/errors.js";
+import { evaluateAndLogLocation } from "../lib/locationTrust.js";
 
 export const listingsRouter = Router();
 
@@ -108,6 +109,7 @@ const createListingSchema = z.object({
   photos: z.array(z.string().url()).min(1).max(10),
   lat: z.number(),
   lng: z.number(),
+  accuracy: z.number().nullable().optional(),
 });
 
 // Posting requires a verified phone number (PRD 2.2 / 3.1 #3).
@@ -118,9 +120,10 @@ listingsRouter.post("/", requireAuth, requireVerified, async (req, res) => {
     return;
   }
 
+  const { accuracy, ...listingInput } = parsed.data;
   const { data, error } = await req.supabase
     .from("listings")
-    .insert({ ...parsed.data, seller_id: req.userId })
+    .insert({ ...listingInput, seller_id: req.userId })
     .select(LISTING_COLUMNS)
     .single();
 
@@ -128,6 +131,17 @@ listingsRouter.post("/", requireAuth, requireVerified, async (req, res) => {
     sendDbError(res, error);
     return;
   }
+
+  void evaluateAndLogLocation({
+    userId: req.userId!,
+    lat: parsed.data.lat,
+    lng: parsed.data.lng,
+    accuracy: accuracy ?? null,
+    ip: req.ip ?? "",
+    source: "listing",
+    supabase: req.supabase,
+  });
+
   res.status(201).json(data);
 });
 

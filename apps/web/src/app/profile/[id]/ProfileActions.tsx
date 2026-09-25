@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Package, Pencil } from "lucide-react";
+import { BadgeCheck, LogOut, Package, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -49,6 +49,12 @@ export function ProfileActions({ profileId }: { profileId: string }) {
         <Link href="/profile/listings">
           <Package size={13} />
           Listing Saya
+        </Link>
+      </Button>
+      <Button asChild variant="outline" size="sm" className="gap-1.5">
+        <Link href="/profile/verification">
+          <BadgeCheck size={13} />
+          Verifikasi Identitas
         </Link>
       </Button>
       <Button

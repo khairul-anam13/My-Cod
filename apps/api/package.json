@@ -11,14 +11,17 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@hapi/boom": "^10.0.1",
+    "@my-cod/shared-types": "workspace:*",
     "@supabase/supabase-js": "^2",
+    "@whiskeysockets/baileys": "7.0.0-rc14",
     "cors": "^2",
     "dotenv": "^17",
     "express": "^5",
     "helmet": "^8",
     "morgan": "^1",
-    "zod": "^4",
-    "@my-cod/shared-types": "workspace:*"
+    "qrcode-terminal": "^0.12.0",
+    "zod": "^4"
   },
   "devDependencies": {
     "@eslint/js": "^9",
@@ -26,6 +29,7 @@
     "@types/express": "^5",
     "@types/morgan": "^1",
     "@types/node": "^24",
+    "@types/qrcode-terminal": "^0.12.2",
     "eslint": "^9",
     "tsx": "^4",
     "typescript": "^5",

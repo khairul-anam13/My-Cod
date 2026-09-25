@@ -12,6 +12,8 @@ export type LocationSource = "gps" | "fallback";
 export interface LocationState {
   lat: number;
   lng: number;
+  /** Meters, from the browser's Geolocation API — null for the fallback (non-GPS) center. */
+  accuracy: number | null;
   source: LocationSource;
   loading: boolean;
 }
@@ -25,6 +27,7 @@ function hasGeolocation() {
 export function useLocation(): LocationState {
   const [state, setState] = useState<LocationState>(() => ({
     ...DEFAULT_LOCATION,
+    accuracy: null,
     source: "fallback",
     loading: hasGeolocation(),
   }));
@@ -37,6 +40,7 @@ export function useLocation(): LocationState {
         setState({
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
+          accuracy: pos.coords.accuracy,
           source: "gps",
           loading: false,
         });

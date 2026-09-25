@@ -22,6 +22,8 @@ export interface AddressFormValue {
   address_detail: string;
   lat: number | null;
   lng: number | null;
+  /** From the browser's Geolocation API when "Lokasi Saya" was used — null for a manual map tap. */
+  accuracy: number | null;
 }
 
 export function AddressFields({
@@ -138,7 +140,17 @@ export function AddressFields({
             value={value.lat !== null && value.lng !== null ? { lat: value.lat, lng: value.lng } : null}
             defaultCenter={DEFAULT_CENTER}
             disabled={disabled}
-            onPick={(lat, lng) => onChange({ ...value, lat, lng })}
+            onPick={(lat, lng, accuracy) => {
+              onChange({ ...value, lat, lng, accuracy: accuracy ?? null });
+              // Suggest-fill only — never overwrite text the user already typed.
+              if (!value.address_detail.trim()) {
+                apiFetch<{ display_name: string | null }>(`/geocode/reverse?lat=${lat}&lng=${lng}`)
+                  .then(({ display_name }) => {
+                    if (display_name) onChange({ ...value, lat, lng, accuracy: accuracy ?? null, address_detail: display_name });
+                  })
+                  .catch(() => {});
+              }
+            }}
           />
         </div>
         <p className="flex items-center gap-1.5 text-xs text-muted-foreground">

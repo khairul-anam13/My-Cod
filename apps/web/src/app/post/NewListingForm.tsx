@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import type { LocationState } from "@/hooks/useLocation";
 import { supabase } from "@/lib/supabaseClient";
 import { apiFetch } from "@/lib/api";
 import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from "@/lib/categoryIcons";
@@ -30,7 +31,7 @@ export function NewListingForm({
 }: {
   token: string;
   userId: string;
-  location: { lat: number; lng: number; source: string };
+  location: LocationState;
 }) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -87,6 +88,7 @@ export function NewListingForm({
           photos,
           lat: location.lat,
           lng: location.lng,
+          accuracy: location.accuracy,
         },
       });
       toast.success("Barang berhasil dipublikasikan!");

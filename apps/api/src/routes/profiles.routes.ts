@@ -2,13 +2,14 @@ import { Router } from "express";
 import { z } from "zod";
 import { requireAuth } from "../middleware/auth.js";
 import { sendDbError } from "../lib/errors.js";
+import { evaluateAndLogLocation } from "../lib/locationTrust.js";
 
 export const profilesRouter = Router();
 
 // Explicit column list — the table also has a generated `location` geography
 // column (raw PostGIS WKB) that clients have no use for.
 const PROFILE_COLUMNS =
-  "id, phone_number, name, profile_photo_url, city, lat, lng, is_verified, rating_avg, created_at";
+  "id, phone_number, name, profile_photo_url, city, lat, lng, is_verified, identity_verified, rating_avg, created_at";
 
 // My COD only serves Kabupaten Karanganyar (see location master data
 // migration) — "city" predates the district/village system and is now just
@@ -29,7 +30,7 @@ profilesRouter.get("/:id", async (req, res) => {
   const { data, error } = await req.supabase
     .from("profiles")
     .select(
-      "id, name, profile_photo_url, city, is_verified, rating_avg, created_at",
+      "id, name, profile_photo_url, city, is_verified, identity_verified, rating_avg, created_at",
     )
     .eq("id", req.params.id)
     .maybeSingle();
@@ -165,6 +166,7 @@ const upsertAddressSchema = z.object({
   address_detail: z.string().min(3).max(300),
   lat: z.number().min(-90).max(90),
   lng: z.number().min(-180).max(180),
+  accuracy: z.number().nullable().optional(),
 });
 
 profilesRouter.put("/me/address", requireAuth, async (req, res) => {
@@ -235,6 +237,16 @@ profilesRouter.put("/me/address", requireAuth, async (req, res) => {
     sendDbError(res, error);
     return;
   }
+
+  void evaluateAndLogLocation({
+    userId: req.userId!,
+    lat: parsed.data.lat,
+    lng: parsed.data.lng,
+    accuracy: parsed.data.accuracy ?? null,
+    ip: req.ip ?? "",
+    source: "address",
+    supabase: req.supabase,
+  });
 
   const { nextUpdateAllowedAt: nextAfterThis } = addressCooldown(now);
   res.json({ ...data, can_update_now: false, next_update_allowed_at: nextAfterThis });

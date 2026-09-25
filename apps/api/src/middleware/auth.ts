@@ -70,3 +70,22 @@ export async function requireVerified(
   }
   next();
 }
+
+/** Must run after requireAuth. Gates the identity-verification review queue to admins. */
+export async function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  const { data, error } = await req.supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", req.userId)
+    .maybeSingle();
+
+  if (error) {
+    res.status(500).json({ error: error.message });
+    return;
+  }
+  if (data?.role !== "admin") {
+    res.status(403).json({ error: "Khusus admin." });
+    return;
+  }
+  next();
+}

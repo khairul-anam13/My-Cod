@@ -25,19 +25,20 @@ const STATUS_STYLE: Record<CodMeetupStatus, string> = {
 export function MeetupPanel({
   conversationId,
   token,
-  initialMeetups,
+  meetups,
+  setMeetups,
   listingId,
   otherUserId,
   onClose,
 }: {
   conversationId: string;
   token: string;
-  initialMeetups: CodMeetup[];
+  meetups: CodMeetup[];
+  setMeetups: React.Dispatch<React.SetStateAction<CodMeetup[]>>;
   listingId: string;
   otherUserId: string;
   onClose: () => void;
 }) {
-  const [meetups, setMeetups] = useState(initialMeetups);
   const [location, setLocation] = useState("");
   const [time, setTime] = useState("");
   const [submitting, setSubmitting] = useState(false);

@@ -15,7 +15,13 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-function ClickHandler({ onPick, disabled }: { onPick: (lat: number, lng: number) => void; disabled?: boolean }) {
+function ClickHandler({
+  onPick,
+  disabled,
+}: {
+  onPick: (lat: number, lng: number, accuracy?: number) => void;
+  disabled?: boolean;
+}) {
   useMapEvents({
     click(e) {
       if (!disabled) onPick(e.latlng.lat, e.latlng.lng);
@@ -39,7 +45,7 @@ export default function LocationPickerMap({
 }: {
   value: { lat: number; lng: number } | null;
   defaultCenter: [number, number];
-  onPick: (lat: number, lng: number) => void;
+  onPick: (lat: number, lng: number, accuracy?: number) => void;
   disabled?: boolean;
 }) {
   const mapRef = useRef<L.Map | null>(null);
@@ -50,8 +56,8 @@ export default function LocationPickerMap({
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const { latitude, longitude } = pos.coords;
-        onPick(latitude, longitude);
+        const { latitude, longitude, accuracy } = pos.coords;
+        onPick(latitude, longitude, accuracy);
         mapRef.current?.flyTo([latitude, longitude], 16);
         setLocating(false);
       },

@@ -16,13 +16,12 @@ import { Input } from "@/components/ui/input";
 import { useSession } from "@/hooks/useSession";
 import { apiFetch } from "@/lib/api";
 import { formatRelativeTime, initials } from "@/lib/format";
+import { supabase } from "@/lib/supabaseClient";
 import type { CodMeetup, Conversation, Listing, Message, Profile } from "@my-cod/shared-types";
 import { ListingPreviewCard } from "./ListingPreviewCard";
 import { MeetupPanel } from "./MeetupPanel";
 import { QuickReplies } from "./QuickReplies";
 import { SafetyReminder } from "./SafetyReminder";
-
-const POLL_INTERVAL_MS = 4000;
 
 type ConversationDetail = Conversation & {
   listing: Pick<Listing, "id" | "title" | "price" | "photos" | "status">;
@@ -55,6 +54,7 @@ export default function ChatThreadPage({
 
   const [conversation, setConversation] = useState<ConversationDetail | null>(null);
   const [messages, setMessages] = useState<Message[] | null>(null);
+  const [meetups, setMeetups] = useState<CodMeetup[]>([]);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [showMeetupForm, setShowMeetupForm] = useState(false);
@@ -72,31 +72,52 @@ export default function ChatThreadPage({
     apiFetch<ConversationDetail>(`/conversations/${conversationId}`, {
       token: session.access_token,
     })
-      .then(setConversation)
+      .then((data) => {
+        setConversation(data);
+        setMeetups(data.meetups);
+      })
+      .catch(() => {});
+  }, [session, conversationId]);
+
+  // History loads once via REST; new messages/meetup updates arrive live
+  // over Supabase Realtime below (replaces the old 4s-poll approach).
+  useEffect(() => {
+    if (!session) return;
+    apiFetch<Message[]>(`/conversations/${conversationId}/messages`, {
+      token: session.access_token,
+    })
+      .then(setMessages)
       .catch(() => {});
   }, [session, conversationId]);
 
   useEffect(() => {
     if (!session) return;
 
-    let cancelled = false;
-    async function poll() {
-      try {
-        const data = await apiFetch<Message[]>(`/conversations/${conversationId}/messages`, {
-          token: session!.access_token,
-        });
-        if (!cancelled) setMessages(data);
-      } catch {
-        // Chat uses simple REST polling for MVP (PRD 5.3) — a transient
-        // network error just waits for the next tick.
-      }
-    }
+    const channel = supabase
+      .channel(`conversation:${conversationId}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` },
+        (payload) => {
+          const message = payload.new as Message;
+          setMessages((prev) => {
+            if (prev?.some((m) => m.id === message.id)) return prev;
+            return [...(prev ?? []), message];
+          });
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "cod_meetups", filter: `conversation_id=eq.${conversationId}` },
+        (payload) => {
+          const meetup = payload.new as CodMeetup;
+          setMeetups((prev) => prev.map((m) => (m.id === meetup.id ? meetup : m)));
+        },
+      )
+      .subscribe();
 
-    poll();
-    const interval = setInterval(poll, POLL_INTERVAL_MS);
     return () => {
-      cancelled = true;
-      clearInterval(interval);
+      supabase.removeChannel(channel);
     };
   }, [session, conversationId]);
 
@@ -182,7 +203,8 @@ export default function ChatThreadPage({
         <MeetupPanel
           conversationId={conversationId}
           token={session.access_token}
-          initialMeetups={conversation.meetups}
+          meetups={meetups}
+          setMeetups={setMeetups}
           listingId={conversation.listing.id}
           otherUserId={other.id}
           onClose={() => setShowMeetupForm(false)}

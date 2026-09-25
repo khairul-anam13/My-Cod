@@ -150,7 +150,7 @@ const createMeetupSchema = z.object({
   meetup_time: z.string().datetime(),
 });
 
-conversationsRouter.post("/:id/meetup", async (req, res) => {
+conversationsRouter.post("/:id/meetup", requireVerified, async (req, res) => {
   const parsed = createMeetupSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Lokasi dan waktu COD diperlukan." });

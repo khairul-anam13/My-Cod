@@ -29,5 +29,8 @@ Thumbs.db
 supabase/.branches
 supabase/.temp
 
+# Baileys WhatsApp session (live WhatsApp Web credentials — never commit)
+.baileys-auth/
+
 # TypeScript
 *.tsbuildinfo

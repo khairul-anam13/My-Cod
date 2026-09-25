@@ -86,21 +86,24 @@ Semua route mutasi ada di `apps/api/src/routes/listings.routes.ts`. Form pasang/
 
 ## 6. Lokasi / Alamat (district & village)
 
-- `apps/api/src/routes/locations.routes.ts` — `GET /districts`, `GET /villages` (master data kecamatan/desa Karanganyar, dari `supabase/migrations/20260727000001_location_master_data.sql`).
-- `apps/web/src/app/profile/edit/AddressFields.tsx` — dropdown kecamatan→desa + peta, dengan aturan **cooldown 30 hari** ganti alamat.
-- Endpoint terkait: `GET/PUT /profiles/me/address` (`apps/api/src/routes/profiles.routes.ts:133,170`) — mengembalikan `can_update_now` / `next_update_allowed_at` yang dihitung server-side.
+- `apps/api/src/routes/locations.routes.ts` — `GET /districts`, `GET /villages` (master data kecamatan/desa Karanganyar, dari `supabase/migrations/20260727000001_location_master_data.sql`), plus `GET /geocode/reverse` dan `GET /geocode/search` (proxy Nominatim, lihat `apps/api/src/lib/nominatim.ts`).
+- `apps/web/src/app/profile/edit/AddressFields.tsx` — dropdown kecamatan→desa + peta, dengan aturan **cooldown 30 hari** ganti alamat. Setelah pin ditempatkan, reverse-geocode Nominatim menyarankan isi `address_detail` (tidak memaksa, field tetap bisa diedit).
+- Endpoint terkait: `GET/PUT /profiles/me/address` (`apps/api/src/routes/profiles.routes.ts:133,170`) — mengembalikan `can_update_now` / `next_update_allowed_at` yang dihitung server-side. `PUT` ini juga memicu log GPS-trust (§11).
+- PostGIS (`ST_DWithin`/`ST_Distance` di `nearby_listings_rpc.sql`) sudah jadi sejak awal — bukan bagian baru.
 
 ---
 
 ## 7. Chat & COD Meetup
 
 - `apps/web/src/app/chat/page.tsx` — daftar percakapan (`GET /conversations`).
-- `apps/web/src/app/chat/[id]/page.tsx` + `MeetupPanel.tsx`, `ListingPreviewCard.tsx`, `SafetyReminder.tsx`, `QuickReplies.tsx` — thread chat, polling pesan (`POLL_INTERVAL_MS`), dan panel jadwal COD.
+- `apps/web/src/app/chat/[id]/page.tsx` + `MeetupPanel.tsx`, `ListingPreviewCard.tsx`, `SafetyReminder.tsx`, `QuickReplies.tsx` — thread chat. Histori pesan dimuat sekali lewat REST, pesan/update jadwal COD baru masuk **live lewat Supabase Realtime** (`supabase.channel(...).on("postgres_changes", ...)`) — polling 4 detik sudah dihapus.
 - API (`apps/api/src/routes/conversations.routes.ts`):
   - `GET/POST /conversations`, `GET /conversations/:id`
   - `GET/POST /conversations/:id/messages`
-  - `POST /conversations/:id/meetup`, `PATCH /conversations/:id/meetup/:meetupId` — jadwal & status ketemuan COD (`scheduled|completed|cancelled`).
-  - Mulai chat & kirim pesan butuh `requireVerified` (bukan cuma login).
+  - `POST /conversations/:id/meetup`, `PATCH /conversations/:id/meetup/:meetupId` — jadwal & status ketemuan COD (`scheduled|completed|cancelled`). Kedua route ini sekarang butuh `requireVerified` juga (sebelumnya `/meetup` kelewatan).
+  - Menandai meetup `completed` otomatis mengubah `listings.status` jadi `sold` lewat trigger DB (`supabase/migrations/20260925000001_transaction_flow_fix.sql`) — tidak ada langkah manual terpisah lagi.
+- Realtime hanya jalan kalau tabel `messages`/`cod_meetups` sudah di-`alter publication supabase_realtime add table ...` (migration `20260925000002_enable_realtime_chat.sql`) — akses tetap dijaga RLS yang sama (partisipan saja), bukan policy baru.
+- Review (`POST /reviews`) sekarang mensyaratkan ada `cod_meetups.status='completed'` untuk pasangan itu — tidak bisa lagi kasih rating tanpa transaksi selesai (lihat §8).
 
 ---
 
@@ -114,7 +117,7 @@ Semua route mutasi ada di `apps/api/src/routes/listings.routes.ts`. Form pasang/
 | Review | `components/RatingStars.tsx` | `GET /reviews/user/:userId`, `POST /reviews` (`requireAuth`) |
 | Lapor pengguna/listing | `components/ReportDialog.tsx` | `POST /reports`, `GET /reports` (`apps/api/src/routes/reports.routes.ts`) |
 
-`is_verified` + `rating_avg` di sini yang membentuk "trust score" yang tampil sebagai badge di `ListingCard`/`RecommendedCard`/`TrustBadges`.
+`rating_avg` + **`identity_verified`** (bukan `is_verified` lagi — lihat §12) yang membentuk badge "Terpercaya"/"COD Aman"/"Identitas Terverifikasi" di `ListingCard`/`RecommendedCard`/`TrustBadges`/`ProfileTrustHero`. `is_verified` sendiri tetap ada tapi cuma berarti "onboarding selesai" — dipakai `requireVerified`, bukan sinyal kepercayaan publik.
 
 ---
 
@@ -136,6 +139,31 @@ Ditambahkan selama masa transisi ke Supabase Cloud (env belum diisi):
 
 ---
 
+## 11. Deteksi GPS palsu (heuristik, advisory)
+
+Browser tidak bisa mendeteksi mock-GPS OS-level seperti app native (tidak ada padanan `isFromMockProvider()` Android) — ini murni sinyal tambahan untuk ditinjau, **bukan** pemblokir otomatis.
+
+- `apps/api/src/lib/locationTrust.ts` — `evaluateAndLogLocation()`: cross-check jarak GPS↔IP-geo (`ipapi.co`, threshold `LOCATION_TRUST_MAX_IP_MISMATCH_KM`) + deteksi kecepatan-tersirat tidak wajar dibanding titik terakhir user (`LOCATION_TRUST_MAX_SPEED_KMH`). Dipanggil fire-and-forget (tidak pernah membuat request gagal) dari `PUT /profiles/me/address` dan `POST /listings`.
+- Tabel `location_events` (`supabase/migrations/20260925000003_location_trust.sql`) — tidak ada SELECT policy untuk user biasa; hanya dibaca lewat `supabaseAdmin` dari route admin.
+- `apps/web/src/hooks/useLocation.ts` dan `components/LocationPickerMap.tsx` sekarang juga menangkap `accuracy` dari `pos.coords`, dikirim bareng lat/lng.
+- `apps/api/src/server.ts` set `trust proxy` — tanpa ini `req.ip` salah kalau di belakang reverse proxy/load balancer.
+
+---
+
+## 12. Verifikasi identitas (OTP WhatsApp + KTP/selfie) & panel admin
+
+- `apps/web/src/app/profile/verification/page.tsx` — (1) verifikasi nomor HP via kode OTP dikirim WhatsApp, (2) upload foto KTP + selfie. Status pending/verified/rejected ditampilkan di halaman yang sama.
+- `apps/api/src/lib/whatsapp.ts` — wrapper Baileys (`@whiskeysockets/baileys`, WhatsApp Web tidak resmi — bukan provider SMS Supabase Auth). Proses persisten, sesi disimpan di folder `.baileys-auth`, aktif hanya kalau `WHATSAPP_OTP_ENABLED=true`. Pairing sekali via scan QR yang dicetak ke console saat boot.
+- `apps/api/src/routes/verification.routes.ts`:
+  - `POST /verification/phone/send-otp` / `POST /verification/phone/verify-otp` — kode di-hash (`node:crypto`), TTL 5 menit, cooldown kirim ulang 60 detik.
+  - `POST /verification/identity` — terima path foto (sudah diupload ke bucket privat `identity-documents`, pola sama seperti `ListingForm.tsx` tapi bucket-nya `public:false`).
+  - `GET /verification/queue` + `PATCH /verification/:id` — khusus admin (`requireAdmin`, `apps/api/src/middleware/auth.ts`), pakai `supabaseAdmin` buat baca antrian & generate signed URL foto (`createSignedUrl`, 5 menit).
+- `apps/web/src/app/admin/verification/page.tsx` — antrian review, approve/reject. Tidak ada flag admin di client — halaman cuma memanggil endpoint admin dan bereaksi ke 403 kalau bukan admin (pengecekan asli tetap di server).
+- Skema baru (`supabase/migrations/20260925000004_identity_verification.sql`): `profiles.role` (`user`/`admin`, admin pertama di-set manual lewat SQL), `identity_verifications`, `phone_otp_codes`, bucket privat `identity-documents`, kolom publik `profiles.identity_verified` (di-sync dari route admin, dipakai badge publik — lihat §8), dan `nearby_listings` RPC diarahkan ulang ke `identity_verified`.
+- `profiles.is_verified` **tidak diubah maknanya** — tetap "onboarding selesai", terpisah dari `identity_verified` (KYC asli).
+
+---
+
 ## Referensi cepat: skema database
 
 `supabase/migrations/` (urut waktu, ini "source of truth" schema):
@@ -145,5 +173,9 @@ Ditambahkan selama masa transisi ke Supabase Cloud (env belum diisi):
 3. `20260725000003_nearby_listings_rpc.sql` — fungsi RPC jarak-terdekat dipakai §2/§3.
 4. `20260725000004_storage.sql` — bucket Storage untuk foto listing/profil.
 5. `20260727000001_location_master_data.sql` — tabel `districts`/`villages` + kolom alamat di `profiles`.
+6. `20260925000001_transaction_flow_fix.sql` — meetup completed → listing sold (trigger), review butuh meetup completed (§7).
+7. `20260925000002_enable_realtime_chat.sql` — enable Realtime untuk `messages`/`cod_meetups` (§7).
+8. `20260925000003_location_trust.sql` — tabel `location_events` (§11).
+9. `20260925000004_identity_verification.sql` — `profiles.role`/`identity_verified`, `identity_verifications`, `phone_otp_codes`, bucket `identity-documents`, `nearby_listings` diarahkan ulang (§12).
 
-`supabase/seed.sql` — data contoh untuk dev lokal (akun demo, listing contoh) — juga jadi acuan bentuk data untuk `mockData.ts` (§9).
+`supabase/seed.sql` — data contoh untuk dev lokal (akun demo, listing contoh) — juga jadi acuan bentuk data untuk `mockData.ts` (§9). **Catatan:** belum ada koneksi Supabase Cloud aktif saat migration 6-9 ditulis — semua sudah lolos baca-ulang manual + typecheck/lint/build, tapi belum pernah benar-benar dijalankan. Terapkan lewat `supabase db push` atau SQL editor Dashboard, lalu ikuti langkah verifikasi manual di laporan akhir sesi ini sebelum dianggap final.

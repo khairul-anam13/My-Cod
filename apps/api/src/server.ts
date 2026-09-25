@@ -5,8 +5,14 @@ import morgan from "morgan";
 import { env } from "./config/env.js";
 import { attachSupabase } from "./middleware/auth.js";
 import { apiRouter } from "./routes/index.js";
+import { startWhatsApp } from "./lib/whatsapp.js";
 
 const app = express();
+
+// Needed for req.ip to resolve to the real client address behind a
+// reverse proxy/load balancer — used by the GPS-trust IP cross-check
+// (src/lib/locationTrust.ts), which is meaningless against a proxy's IP.
+app.set("trust proxy", true);
 
 app.use(helmet());
 app.use(cors({ origin: env.WEB_ORIGIN, credentials: true }));
@@ -43,4 +49,5 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 
 app.listen(env.PORT, () => {
   console.log(`API listening on http://localhost:${env.PORT}`);
+  startWhatsApp();
 });

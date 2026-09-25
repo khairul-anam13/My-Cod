@@ -23,6 +23,7 @@ const EMPTY_ADDRESS: AddressFormValue = {
   address_detail: "",
   lat: null,
   lng: null,
+  accuracy: null,
 };
 
 function formatIndonesianDateTime(iso: string) {
@@ -87,6 +88,7 @@ function EditProfileForm() {
           address_detail: addr.address_detail ?? "",
           lat: addr.lat,
           lng: addr.lng,
+          accuracy: null,
         });
         setCanUpdateNow(addr.can_update_now);
         setNextUpdateAllowedAt(addr.next_update_allowed_at);
@@ -162,6 +164,7 @@ function EditProfileForm() {
           address_detail: address.address_detail,
           lat: address.lat,
           lng: address.lng,
+          accuracy: address.accuracy,
         },
       });
       setCanUpdateNow(result.can_update_now);

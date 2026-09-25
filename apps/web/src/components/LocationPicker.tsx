@@ -16,7 +16,7 @@ const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
 export function LocationPicker(props: {
   value: { lat: number; lng: number } | null;
   defaultCenter: [number, number];
-  onPick: (lat: number, lng: number) => void;
+  onPick: (lat: number, lng: number, accuracy?: number) => void;
   disabled?: boolean;
 }) {
   return <LocationPickerMap {...props} />;

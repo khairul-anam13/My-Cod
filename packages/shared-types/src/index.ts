@@ -9,6 +9,8 @@ export type ReportReason =
   | "no_show"
   | "lainnya";
 export type ReportStatus = "pending" | "reviewed" | "resolved";
+export type Role = "user" | "admin";
+export type VerificationStatus = "pending" | "verified" | "rejected";
 
 export interface Profile {
   id: string;
@@ -19,6 +21,8 @@ export interface Profile {
   lat: number;
   lng: number;
   is_verified: boolean;
+  /** Public-safe flag — true once an admin approves the identity_verifications submission (Fase 4). */
+  identity_verified: boolean;
   rating_avg: number;
   created_at: string;
 }
@@ -188,4 +192,50 @@ export interface CreateReportInput {
 export interface ApiError {
   error: string;
   details?: unknown;
+}
+
+// ---- Identity verification (Fase 4) ----
+
+export interface IdentityVerification {
+  id: string;
+  user_id: string;
+  status: VerificationStatus;
+  ktp_photo_path: string | null;
+  selfie_photo_path: string | null;
+  phone_verified_at: string | null;
+  rejection_reason: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  submitted_at: string;
+}
+
+export interface VerificationQueueItem {
+  id: string;
+  user_id: string;
+  status: VerificationStatus;
+  ktp_photo_path: string | null;
+  selfie_photo_path: string | null;
+  ktp_photo_url: string | null;
+  selfie_photo_url: string | null;
+  phone_verified_at: string | null;
+  submitted_at: string;
+  profile: { name: string; phone_number: string };
+}
+
+export interface SendPhoneOtpInput {
+  phone_number: string;
+}
+
+export interface VerifyPhoneOtpInput {
+  code: string;
+}
+
+export interface SubmitIdentityInput {
+  ktp_photo_path: string;
+  selfie_photo_path: string;
+}
+
+export interface ReviewIdentityInput {
+  status: Extract<VerificationStatus, "verified" | "rejected">;
+  rejection_reason?: string;
 }
