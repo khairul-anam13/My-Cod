@@ -1,0 +1,67 @@
+project_id = "my-cod"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+[inbucket]
+enabled = true
+port = 54324
+
+[storage]
+enabled = true
+file_size_limit = "10MiB"
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000", "https://indignant-seethingly-breanne.ngrok-free.dev", "https://*.loca.lt"]
+jwt_expiry = 3600
+enable_signup = true
+
+# Phone (OTP) auth is the primary login method for My COD (see PRD 2.1/2.2).
+[auth.sms]
+enable_signup = true
+enable_confirmations = true
+
+[auth.sms.twilio]
+account_sid = "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+message_service_sid = "MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+auth_token = "test_auth_token_placeholder"
+
+# Local/dev only: lets you log in with a fixed OTP instead of sending real SMS.
+# Remove before connecting a real SMS provider for staging/production.
+[auth.sms.test_otp]
+"+6281111111111" = "123456"
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+
+# Default GoTrue templates only render a magic-link URL — but the login page
+# (apps/web/src/app/login/page.tsx) asks the user to type a 6-digit code via
+# supabase.auth.verifyOtp(). Without a custom template showing {{ .Token }},
+# users get a link with nowhere to find the code the form wants.
+# "confirmation" fires for a brand-new email (shouldCreateUser: true);
+# "magic_link" fires for an email that already has an account.
+[auth.email.template.confirmation]
+subject = "Kode Verifikasi My COD Kamu"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.magic_link]
+subject = "Kode Masuk My COD Kamu"
+content_path = "./supabase/templates/magic_link.html"
+
+[analytics]
+enabled = false

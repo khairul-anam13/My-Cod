@@ -1,0 +1,24 @@
+{
+  "name": "my-cod",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Marketplace komunitas berbasis COD untuk satu kota — monorepo (Next.js + Express + Supabase)",
+  "packageManager": "pnpm@10.12.4",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter=./apps/* dev",
+    "dev:web": "pnpm --filter web dev",
+    "dev:api": "pnpm --filter api dev",
+    "build": "pnpm -r --if-present build",
+    "lint": "pnpm -r --if-present lint",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:reset": "supabase db reset"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}

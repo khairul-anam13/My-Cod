@@ -1,0 +1,166 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Urban Neo-Brutalism Theme */
+  --background: #0D0F12; /* Asphalt Black */
+  --foreground: #F4F5F0; /* Paper White */
+  --surface: #171A1F;
+  --surface-muted: #22262D;
+  --muted-foreground: #A0A5B1;
+  --border-color: #2A2D35; /* Concrete Grey */
+
+  /* Safety Orange */
+  --primary: #FF5A00;
+  --primary-hover: #FF7B33;
+  --primary-foreground: #FFFFFF;
+  --primary-soft: rgba(255, 90, 0, 0.15);
+  --primary-soft-foreground: #FFB380;
+
+  /* Electric Lime */
+  --accent: #CCFF00;
+  --accent-foreground: #0D0F12;
+  --accent-soft: rgba(204, 255, 0, 0.15);
+
+  --danger: #f43f5e;
+  --danger-hover: #fb7185;
+  --danger-soft: rgba(244, 63, 94, 0.15);
+  --danger-soft-foreground: #fda4af;
+
+  /* shadcn structural tokens, mapped onto the brand palette */
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --secondary: var(--surface-muted);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--surface-muted);
+  --destructive: var(--danger);
+  --destructive-foreground: #FFFFFF;
+  --border: var(--border-color);
+  --input: var(--border-color);
+  --ring: var(--primary);
+  --radius: 0.75rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border-color);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-soft-foreground: var(--primary-soft-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-soft-foreground: var(--danger-soft-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-dm-sans);
+  --font-display: var(--font-bricolage);
+
+  --animate-fade-in-up: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-bounce-slight: bounce-slight 0.4s ease-in-out;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce-slight {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.92);
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display), Arial, Helvetica, sans-serif;
+}
+
+/* Hide number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  appearance: textfield;
+}
+
+/* Sharp Glassmorphism (Neo-Brutalism) */
+.glass {
+  background: rgba(23, 26, 31, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+}
+
+.brutalist-shadow {
+  box-shadow: 4px 4px 0px var(--primary);
+  border: 2px solid var(--primary);
+}
+
+.brutalist-card {
+  box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease-in-out;
+}
+
+.brutalist-card:hover {
+  box-shadow: 4px 4px 0px var(--primary);
+  border-color: var(--primary);
+  transform: translate(-2px, -2px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+}
